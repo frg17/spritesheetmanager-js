@@ -49,8 +49,8 @@ function Animation(frames) {
 
     Methods:
         addAnimation:(animationName, animation)
-        play(animationName): plays the animation stored with the designated name.
-        render(cx, cy): renders animation at given coordinates.
+        playAnimation(animationName): plays the animation stored with the designated name.
+        update(cx, cy, angle, scale): updates animation
     
     Properties:
         CanvasRenderingContext2D ctx: context to draw animation upon
@@ -61,10 +61,10 @@ function Animation(frames) {
 
     Usage: 
         const an = new Animator(ctx);
-        an.add("animationName", animation);
-        an.play("animationName");
+        an.addAnimation("animationName", animation);
+        an.playAnimation("animationName");
         setInterval(() => {
-            an.render();
+            an.update(cx, cy, angle, scale);
         }, 16.666);
 
         ....
@@ -96,27 +96,56 @@ Animator.prototype.addAnimation = function(animationName, animation) {
  * The animator renders the animation with the given name (key).
  * @param {str} animationName name (key) of animation that should be played
  */
-Animator.prototype.play = function(animationName) {
+Animator.prototype.playAnimation = function(animationName) {
     this.currentAnimation = this.animations[animationName];
     this.nextFrame = 0;
     this.frameIntervalStep = this.currentAnimation.frameInterval;
 }
 
 /**
- * Renders the Animators current animation at the specified coordinates.
+ * Updates the current animation.
  * @param {int} cx 
  * @param {int} cy 
+ * @param {float} angle
+ * @param {float} scale
  */
-Animator.prototype.render = function(cx, cy) {
-    this.frameIntervalStep--;
+Animator.prototype.update = function(cx, cy, angle, scale) {
+    if (angle == undefined) angle = 0;
+    if (scale == undefined) scale = 1;
+    //Frame image
     const frameToDraw = this.currentAnimation.frames[this.nextFrame];
-    if(this.frameIntervalStep == 0) {  
+
+    //Update animator status
+    this.frameIntervalStep--;
+    if(this.frameIntervalStep == 0) {
         //Animation frame should update on next call.
         this.frameIntervalStep = this.currentAnimation.frameInterval;
         this.nextFrame++;
         if(this.nextFrame >= this.currentAnimation.length) this.nextFrame = 0;
     }
+    
+    //draw frame
+    this._render(frameToDraw, cx, cy, angle, scale);
+}
+
+/**
+ * Renders the Animators current animation at the specified coordinates.
+ * @param {frameToDraw} animation frame to draw
+ * @param {int} cx 
+ * @param {int} cy 
+ * @param {float} angle
+ * @param {float} scale
+ */
+Animator.prototype._render = function(frameToDraw, cx, cy, angle, scale) {
     var hw = frameToDraw.width / 2;
     var hh = frameToDraw.height / 2;
+
+    this.ctx.save();
+    this.ctx.translate(cx, cy);
+    this.ctx.rotate(angle);
+    this.ctx.scale(scale, scale);
+    this.ctx.translate(-cx, -cy);
     this.ctx.drawImage(frameToDraw, cx - hw, cy - hh);
+    this.ctx.restore();
 }
+

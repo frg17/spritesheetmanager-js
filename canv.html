@@ -11,6 +11,10 @@
         let animations;
         let ctx;
         let an;
+        let x = 200;
+        let y = 200;
+        let angle = 0;
+        let scale = 1;
 
 
         window.addEventListener('DOMContentLoaded', () => {
@@ -32,25 +36,29 @@
             SpriteSheetRenderer.loadAnimations((result) => { 
                 animations = result 
                 //When animations are loaded, assets are ready to be used.
-                runAnimation(200, 200);
+                runAnimation();
             });
         });
 
 
-        function runAnimation(cx, cy) {
+        function runAnimation() {
             //Create animator
             an = new Animator(ctx);
+
             //Add playable animations to animator
-            an.addAnimation("heroidle", animations["heroidle"]);
+                //Not centred in frame (change angle to see problem)
+            an.addAnimation("heroidle", animations["heroidle"]); 
+                //Centred in frame
             an.addAnimation("pirateidle", animations["pirateidle"]);
+
             //Set animation that should be played (default null)
-            an.play("heroidle");
+            an.playAnimation("pirateidle");
             
             //Call render animator on update.
             iid = setInterval(() => {
                 ctx.clearRect(0, 0, 400, 400);
                 ctx.save();
-                an.render(cx, cy);
+                an.update(x, y, angle, scale);
                 ctx.restore();
             }, 16.666);
         }
