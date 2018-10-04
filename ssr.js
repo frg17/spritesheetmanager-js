@@ -13,9 +13,6 @@
  * Contains logic for creating SpriteSheet objects.
  * 
  * -- Usage -- 
- *      Initialisation:
- *          On DOMContentLoaded call: 'SpriteSheetRenderer.init(canvasId);'
- * 
  *      Create sprite:  
  *          SpriteSheetRenderer.addSpriteSheetAnimation(animationName, imgSrc, frameWidth, frameHeight, frameCount, frameInterval);
  *          ... repeat for other animations ...
@@ -26,9 +23,6 @@
  *                                                     
  */
 const SpriteSheetRenderer = (function() {
-    let oCanvas;
-    let oCtx;
-    
     /* List of jobs, every attribute should be in format:
         { imgSrc, frameWidth, frameHeight, frameCount, onLoad }
     */
@@ -36,16 +30,6 @@ const SpriteSheetRenderer = (function() {
     const jobQueue = [];    //queue for jobs
     let jobsRun = false;    //Check if already called loadAnimations()
 
-
-    /**
-     * Initialises this SpriteSheetRenderer object.
-     * @param {*} canvasId html id of canvas to to draw on.
-     * 
-     */
-    function init(canvasId) {                                               ///<---------------------PUBLIC-------------------------------------->
-        oCanvas = document.getElementById(canvasId);
-        oCtx = canvas.getContext("2d");
-    }
 
     /**
      * Adds a spritesheet to the animation work queue. Animations get processed
@@ -181,7 +165,7 @@ const SpriteSheetRenderer = (function() {
             if(frames.loading == 0) {
                 //source image has been split and loaded can be returned.
                 frames.loading = undefined;
-                const animation = new Animation(oCtx, frames);
+                const animation = new Animation(frames);
                 onAllFramesLoaded(animation);
             }
         }
@@ -194,22 +178,11 @@ const SpriteSheetRenderer = (function() {
      * during development.
      */
     function _debug(obj) {
-        if(!obj) obj = {};
-
-        console.log(oCanvas);
-
-        if(obj.img) {
-        console.log("Drawing image");
-        oCtx.save();
-        oCtx.drawImage(obj.img, 200, 200);
-        oCtx.restore();
-        }
         
     }
 
 
     return {
-        init,
         addSpriteSheetAnimation,
         loadAnimations,
         _debug,
