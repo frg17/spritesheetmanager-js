@@ -36,9 +36,15 @@ __SpriteSheetRenderer.loadAnimations(callback)__
 
 __Animator(ctx)__
 
+<<<<<<< HEAD
     Creates an animator that draws on the given context
 
     @param {"2DDrawingContext"} _ctx_ context to draw upon
+=======
+  Creates an animator that draws on the given context
+
+  @param {"2DDrawingContext"} _ctx_ context to draw upon
+>>>>>>> c370d33bc50aeedb0a52cf905b187920ab72074d
 
 
 __Animator.prototype.addAnimation(animationName, animation)__
@@ -61,7 +67,11 @@ __Animator.prototype.render(cx, cy)__
     Renders the Animators current animation at the specified coordinates.
 
     @param {int} _cx_ center x
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> c370d33bc50aeedb0a52cf905b187920ab72074d
     @param {int} _cy_ center y
 
 ### Example usage
