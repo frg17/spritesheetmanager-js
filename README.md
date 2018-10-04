@@ -36,16 +36,9 @@ __SpriteSheetRenderer.loadAnimations(callback)__
 
 __Animator(ctx)__
 
-<<<<<<< HEAD
     Creates an animator that draws on the given context
 
     @param {"2DDrawingContext"} _ctx_ context to draw upon
-=======
-  Creates an animator that draws on the given context
-
-  @param {"2DDrawingContext"} _ctx_ context to draw upon
->>>>>>> c370d33bc50aeedb0a52cf905b187920ab72074d
-
 
 __Animator.prototype.addAnimation(animationName, animation)__
 
