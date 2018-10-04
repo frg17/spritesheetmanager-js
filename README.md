@@ -13,17 +13,17 @@ __SpriteSheetRenderer.addSpriteSheetAnimation(animationName, imgSrc, frameWidth,
     when loadAnimations() is called. Function can not be called after loadAnimations()
     has been called.
     
-    @param {str} animationName name of animation
+    @param {str} _animationName_ name of animation
     
-    @param {str} imgSrc image URL
+    @param {str} _imgSrc_ image URL
     
-    @param {int} frameWidth width each animation frame
+    @param {int} _frameWidth_ width each animation frame
     
-    @param {int} frameHeight height of each animation frame
+    @param {int} _frameHeight_ height of each animation frame
     
-    @param {int} frameCount number of frames in animation.
+    @param {int} _frameCount_ number of frames in animation.
     
-    @param {int} frameInterval animation should update every n frames
+    @param {int} _frameInterval_ animation should update every n frames
 
 __SpriteSheetRenderer.loadAnimations(callback)__
 
@@ -32,15 +32,37 @@ __SpriteSheetRenderer.loadAnimations(callback)__
     is passed an object holding all animations with its animationName as a key.
     Can not be called more than once.
     
-    @param {func} callback   callback function returning object.
+    @param {func} _callback_ callback function returning object.
+
+__Animator(ctx)__
+
+  Creates an animator that draws on the given context
+
+  @param {"2DDrawingContext"} _ctx_ context to draw upon
 
 
+__Animator.prototype.addAnimation(animationName, animation)__
 
-------------------
+    Adds a an animation as playable by animator.
 
-ANIMATOR DOC HERE
+    @param {str} _animationName_ name to store animation
 
-------------------
+    @param {Animation} _animation_ to be stored.
+
+__Animator.prototype.play(animationName)__ 
+
+    The animator is set to render the animation with the given name (key).
+
+    @param {str} _animationName_ name (key) of animation that should be played
+
+
+__Animator.prototype.render(cx, cy)__
+
+    Renders the Animators current animation at the specified coordinates.
+
+    @param {int} _cx_ center x
+    
+    @param {int} _cy_ center y
 
 ### Example usage
 ```
