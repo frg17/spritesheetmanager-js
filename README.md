@@ -9,28 +9,30 @@ animations in an easy way.
 
 __SpriteSheetRenderer.addSpriteSheetAnimation(animationName, imgSrc, frameWidth, frameHeight, frameCount, frameInterval)__
 
-/**
-    * Adds a spritesheet to the animation work queue. Animations get processed
-    * when loadAnimations() is called. Function can not be called after loadAnimations()
-    * has been called.
-    *
-    * @param {str} animationName name of animation
-    * @param {str} imgSrc image URL
-    * @param {int} frameWidth width each animation frame
-    * @param {int} frameHeight height of each animation frame
-    * @param {int} frameCount number of frames in animation.
-    * @param {int} frameInterval animation should update every n frames
-*/
+    Adds a spritesheet to the animation work queue. Animations get processed
+    when loadAnimations() is called. Function can not be called after loadAnimations()
+    has been called.
+    
+    @param {str} animationName name of animation
+    
+    @param {str} imgSrc image URL
+    
+    @param {int} frameWidth width each animation frame
+    
+    @param {int} frameHeight height of each animation frame
+    
+    @param {int} frameCount number of frames in animation.
+    
+    @param {int} frameInterval animation should update every n frames
 
 __SpriteSheetRenderer.loadAnimations(callback)__
 
-/**
-    * Functions starts loading and creating all animations added to job queue.
-    * When all animations have been created, callback function is called that
-    * is passed an object holding all animations with its animationName as a key.
-    * Can not be called more than once.
-    * @param {func} callback   callback function returning object.
-*/
+    Functions starts loading and creating all animations added to job queue.
+    When all animations have been created, callback function is called that
+    is passed an object holding all animations with its animationName as a key.
+    Can not be called more than once.
+    
+    @param {func} callback   callback function returning object.
 
 
 
