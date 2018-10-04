@@ -8,10 +8,14 @@ window.addEventListener('DOMContentLoaded', () => {
     
     //Add resources for renderer to create animations from
     SpriteSheetRenderer.addSpriteSheetAnimation(
-        "heroidle", "https://res.cloudinary.com/frozenscloud/image/upload/v1538648226/heroidle.png", 64, 64, 8, 6
+        "heroidle", 
+        "https://res.cloudinary.com/frozenscloud/image/upload/v1538648226/heroidle.png", 
+        64, 64, 8, 4
     );
     SpriteSheetRenderer.addSpriteSheetAnimation(
-        "pirateidle", "https://res.cloudinary.com/frozenscloud/image/upload/v1538648226/pirate1idle.png", 32, 32, 6, 6
+        "pirateidle", 
+        "https://res.cloudinary.com/frozenscloud/image/upload/v1538648226/pirate1idle.png", 
+        32, 32, 6, 4
     );
 
     //Create Animation objects.
@@ -20,8 +24,6 @@ window.addEventListener('DOMContentLoaded', () => {
         //When animations are loaded, assets are ready to be used.
         runAnimation(200, 200);
     });
-
-    
 });
 
 
