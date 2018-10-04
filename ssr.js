@@ -1,7 +1,6 @@
 
 
-        //TODO VALIDATE PARAMETERS IN init(canvasId)
-        //TODO VALIDATE PARAMETERS IN createSpriteFromSpriteSheet(...)
+        //TODO VALIDATE PUBLIC PARAMETERS
 
 /*
  *  Author: Frosti Grétarsson 
@@ -18,13 +17,24 @@
  *          On DOMContentLoaded call: 'SpriteSheetRenderer.init(canvasId);'
  * 
  *      Create sprite:  
- *          SpriteSheetRenderer.createSpriteFromSpriteSheet(imgSrc, frameWidth, frameHeight, frameCount, onReady);
- *      onReady is a callback function that gets passed the sprite when it's ready.
+ *          SpriteSheetRenderer.addSpriteSheetAnimation(animationName, imgSrc, frameWidth, frameHeight, frameCount, frameInterval);
+ *          ... repeat for other animations ...
+ * 
+ *          SpriteSheetRenderer.loadAnimations((animations) => {
+ *              -- do stuff --      
+ *          });
  *                                                     
  */
 const SpriteSheetRenderer = (function() {
     let oCanvas;
     let oCtx;
+    
+    /* List of jobs, every attribute should be in format:
+        { imgSrc, frameWidth, frameHeight, frameCount, onLoad }
+    */
+    const jobs = {};        //List of jobs
+    const jobQueue = [];    //queue for jobs
+    let jobsRun = false;    //Check if already called loadAnimations()
 
 
     /**
@@ -38,34 +48,96 @@ const SpriteSheetRenderer = (function() {
     }
 
     /**
+     * Adds a spritesheet to the animation work queue. Animations get processed
+     * when loadAnimations() is called
+     * @param {str} animationName name of animation
+     * @param {str} imgSrc image URL
+     * @param {int} frameWidth width each animation frame
+     * @param {int} frameHeight height of each animation frame
+     * @param {int} frameCount number of frames in animation.
+     * @param {int} frameInterval animation should update every n frames
+     */
+    function addSpriteSheetAnimation(
+        animationName, imgSrc, frameWidth, frameHeight, frameCount, frameInterval
+    ) 
+    {                                                                 ///<---------------------PUBLIC-------------------------------------->
+        //Check if animations are already processed
+        if(jobsRun)
+            return console.log('Animations have already been processed');
+        //Check if there already is a job under the same name.
+        if(jobs[animationName]) 
+            return console.log(`Animation '${animationName}' already exists`);
+        
+        //Create job
+        jobs[animationName] = { animationName, imgSrc, frameWidth, 
+                                frameHeight, frameCount, frameInterval };
+        //Push job to queue
+        jobQueue.push(animationName);
+    }
+
+    /**
+     * Functions starts loading and creating all animations added to job queue.
+     * When all animations have been created, callback function is called returning
+     * an object holding all animations with original animationName.
+     * @param {func} callback   callback function returning object.
+     */
+    function loadAnimations(callback) {                                         ///<---------------------PUBLIC-------------------------------------->
+        if(jobsRun) return console.log("Animations already processed");
+        jobsRun = true;
+        const animations = {};
+        animations._loadCount = jobQueue.length;
+        for(var i = 0; i < jobQueue.length; i++) {
+            const animationName = jobQueue[i];
+            const job = jobs[animationName];
+            createSpriteFromSpriteSheet(
+                job.imgSrc,
+                job.frameWidth,
+                job.frameHeight,
+                job.frameCount,
+                (result) => {
+                    result.frameInterval = job.frameInterval;
+                    result.frameIntervalStep = job.frameInterval;
+                    animations[animationName] = result;
+
+                    animations._loadCount--;
+                    if(animations._loadCount == 0) {
+                        callback(animations);
+                    }
+                }
+            )
+        }
+    }
+
+    /**
      * Function takes an imgSrc and splits it into frames and creates a Sprite. When done,
-     * calls onReady callback function and passes the resulting Sprite as a parameter.
+     * calls onLoad callback function and passes the resulting Sprite as a parameter.
      * @param {str} imgSrc src URL of image
      * @param {int} frameWidth width of sprite frame. Should be a factor of image width
      * @param {int} frameHeight height of sprite frame . Should be a factor of image height
      * @param {int} frameCount  How many frames are in the spritesheet.
-     * @param {func} onReady function that gets passed the sprite object when ready.
+     * @param {func} onLoad function that gets passed the animation object when all frames have been extracted.
      */
-    function createSpriteFromSpriteSheet(imgSrc, frameWidth, frameHeight, frameCount, onReady) {    //<----------PUBLIC--------------------------------------->
+    function createSpriteFromSpriteSheet(imgSrc, frameWidth, frameHeight, frameCount, onLoad) {
         const img = new Image();
         img.crossOrigin = "Anonymous";  //Allow cross origin images
         img.onload = function() {   //Wait for image to load before working with it.   
-            splitImage(img, frameWidth, frameHeight, frameCount, onReady);
+            splitImage(img, frameWidth, frameHeight, frameCount, onLoad);
         }
         img.src = imgSrc;
     }
 
+
     /**
      * Takes an image(spritesheet) and splits it into frames. Image should already 
-     * be loaded. Then creates a sprite. Calls onReady callback function when done 
+     * be loaded. Then creates a sprite. Calls onLoad callback function when done 
      * passing the resulting Sprite as a parameter.
      * @param {Image} img Spritesheet to split
      * @param {int} frameWidth width of sprite frame. Should be a factor of image width
      * @param {int} frameHeight height of sprite frame . Should be a factor of image height
      * @param {int} frameCount  How many frames in spritesheet
-     * @param {func} onReady function to call when task is done, should
+     * @param {func} onLoad function to call when task is done, should
      */
-    function splitImage(img, frameWidth, frameHeight, frameCount, onReady) {
+    function splitImage(img, frameWidth, frameHeight, frameCount, onLoad) {
         const frames = [];  //return object
         frames.loading = frameCount;  //no. of frames to load from dataURL.
         //Create canvas to use for splitting image into frames.
@@ -83,7 +155,7 @@ const SpriteSheetRenderer = (function() {
             }
             ctx.clearRect(0, 0, frameWidth, frameHeight);
             ctx.drawImage(img, srcX, srcY, frameWidth, frameHeight, 0, 0, frameWidth, frameHeight);
-            createAndPushNewFrame(frames, canv, onReady);
+            createAndPushNewFrame(frames, canv, onLoad);
             
             srcX += frameWidth;
             frameCount--;
@@ -93,23 +165,24 @@ const SpriteSheetRenderer = (function() {
     }
 
     /**
-     * Creates a new Image object from a canvas.
+     * Creates a new Image object from a canvas appends to a list of frames
+     * for an animation.
      * @param {list} list containing frames
      * @param {canvas} canvas
      * @param {onAllFramesLoaded} function called when last frame has loaded.
-     * @return {Image} The image created. 
      */
-    function createAndPushNewFrame(frameList, canvas, onAllFramesLoaded) {
+    function createAndPushNewFrame(frames, canvas, onAllFramesLoaded) {
         const img = new Image();
-        frameList.push(img);
+        frames.push(img);
         img.src = canvas.toDataURL("image/png");
         img.onload = () => { 
-            //When frameList.loading == 0, all frames are ready.
-            frameList.loading--;    
-            if(frameList.loading == 0) {
+            //When frames.loading == 0, all frames are ready.
+            frames.loading--;    
+            if(frames.loading == 0) {
                 //source image has been split and loaded can be returned.
-                const sprite = new Sprite(oCtx, frameList);
-                onAllFramesLoaded(sprite);
+                frames.loading = undefined;
+                const animation = new Animation(oCtx, frames);
+                onAllFramesLoaded(animation);
             }
         }
     }
@@ -137,7 +210,8 @@ const SpriteSheetRenderer = (function() {
 
     return {
         init,
-        createSpriteFromSpriteSheet,
+        addSpriteSheetAnimation,
+        loadAnimations,
         _debug,
     }
 

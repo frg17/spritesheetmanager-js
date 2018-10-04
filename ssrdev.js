@@ -1,16 +1,26 @@
-let sprite1;
-let sprite2;
+let animations;
 
 window.addEventListener('DOMContentLoaded', () => {
     SpriteSheetRenderer.init("canvas");
 
-    SpriteSheetRenderer.createSpriteFromSpriteSheet(
-        "pirate1idle.png", 32, 32, 6,
-        (result) => { sprite1 = result;}
+    SpriteSheetRenderer.addSpriteSheetAnimation(
+        "heroidle", "heroidle.png", 64, 64, 8, 6
+    );
+    SpriteSheetRenderer.addSpriteSheetAnimation(
+        "pirateIdle", "pirate1idle.png", 32, 32, 6, 6
     );
 
-    SpriteSheetRenderer.createSpriteFromSpriteSheet(
-        "heroidle.png", 64, 64, 8, 
-        (result) => { sprite2 = result }
-    );
+    SpriteSheetRenderer.loadAnimations((result) => { animations = result });
 });
+
+
+function runAnimation(an, cx, cy) {
+    iid = setInterval(() => {
+        var ctx = document.getElementById('canvas').getContext('2d');
+        ctx.clearRect(0, 0, 400, 400);
+        ctx.save();
+        an.render(cx, cy);
+        ctx.restore();
+    }, 16.3333);
+}
+    
