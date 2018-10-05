@@ -75,11 +75,14 @@ function Animation(frames) {
  * @param {"2DDrawingContext"} ctx to draw upon
  */
 function Animator(ctx) {
-    this.ctx = ctx;
-    this.frameIntervalStep = 1; 
-    this.nextFrame = 0;
-    this.animations = {};
-    this.currentAnimation = null;
+    this.ctx = ctx;             //Context to draw upon
+    this.frameIntervalStep = 1; //Updates until next frame
+    this.nextFrame = 0;     //next frame to render for animation
+    this.animations = {};   //Animations available to animator
+    this.currentAnimation = null; //Current animation playing
+
+    this.playOnce = false; //Play current animation once
+    this.playOnceNextAnimation = null;
 }
 
 
@@ -103,7 +106,22 @@ Animator.prototype.playAnimation = function(animationName) {
 }
 
 
-/**********************************************UPDATED FUNCTION */
+/*********************************UNDOCUMENTED ****************/
+/**
+ * Plays animation once and then immediately changes to the next one.
+ * @param {str} animationName Animation to play once
+ * @param {str} nextAnimationName Next animation to transition to. If null
+ *                                plays no animation after one shot has finished.
+ */
+Animator.prototype.playAnimationOnce = function(animationName, nextAnimationName) {
+    this.playOnce = true;
+    this.playOnceNextAnimation = nextAnimationName;
+    this.currentAnimation = this.animations[animationName];
+    this.nextFrame = 0;
+    this.frameIntervalStep = this.currentAnimation.frameInterval;
+}
+
+
 /**
  * Updates the current animation.
  * @param {int} cx 
@@ -113,19 +131,34 @@ Animator.prototype.playAnimation = function(animationName) {
  * @param {float} scaleY
  */
 Animator.prototype.update = function(cx, cy, angle, scaleX, scaleY) {
+    if (this.currentAnimation === null) return; //Don't update if there's no animation playing
+
     if (angle == undefined) angle = 0;
     if (scaleX == undefined) scaleX = 1;
     if (scaleY == undefined) scaleY = 1;
-    //Frame image
+
+    //Get frame to draw
     const frameToDraw = this.currentAnimation.frames[this.nextFrame];
 
     //Update animator status
     this.frameIntervalStep--;
-    if(this.frameIntervalStep == 0) {
-        //Animation frame should update on next call.
+    //Check if animation frame should update on next update call.
+    if(this.frameIntervalStep == 0) {           // TRY AND PULL THIS IF INTO ANOTHER FUNCTION
         this.frameIntervalStep = this.currentAnimation.frameInterval;
         this.nextFrame++;
-        if(this.nextFrame >= this.currentAnimation.length) this.nextFrame = 0;
+        if(this.nextFrame >= this.currentAnimation.length) {
+            this.nextFrame = 0;
+
+            if (this.playOnce) {    //Check if this is a one shot animation
+                this.playOnce = false;  //Next animation should play continuously.
+                if(!this.playOnceNextAnimation == null) {
+                    this.currentAnimation = null;   //Play no animation after
+                } else {
+                    this.playAnimation(this.playOnceNextAnimation)  //Play next animation after
+                }
+                this.playOnceNextAnimation = null;
+            }
+        }
     }
     
     //draw frame

@@ -56,6 +56,13 @@ __Animator.prototype.playAnimation(animationName)__
 
     @param {str} _animationName_ name (key) of animation that should be played
 
+__Animator.prototype.playAnimationOnce(animationName, nextAnimationName)__ 
+
+    Plays animation once and then immediately changes to the next one.
+
+    @param {str} animationName Animation to play once
+    
+    @param {str} nextAnimationName Next animation to transition to. If null plays no animation after one shot has finished.
 
 __Animator.prototype.update(cx, cy, angle, scaleX, scaleY)__
 
