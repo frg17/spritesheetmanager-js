@@ -2,6 +2,8 @@ let animations;
 let ctx;
 let an;
 let st;
+let lastfr = null;
+let dt = 0;
 
 window.addEventListener('DOMContentLoaded', () => {
     ctx = document.getElementById('canvas').getContext('2d');
@@ -10,17 +12,17 @@ window.addEventListener('DOMContentLoaded', () => {
     SpriteSheetRenderer.addSpriteSheetAnimation(
         "idle", 
         "https://res.cloudinary.com/frozenscloud/image/upload/v1538747380/idle.png", 
-        32, 64, 1, 1
+        32, 64, 1, 0
     );
     SpriteSheetRenderer.addSpriteSheetAnimation(
         "walk", 
         "https://res.cloudinary.com/frozenscloud/image/upload/v1538747380/walk.png", 
-        32, 64, 6, 6
+        32, 64, 6, 600
     );
     SpriteSheetRenderer.addSpriteSheetAnimation(
         "push",
         "https://res.cloudinary.com/frozenscloud/image/upload/v1538751438/push.png",
-        32, 64, 6, 6
+        32, 64, 6, 600
     );
 
     //Create Animation objects.
@@ -28,17 +30,18 @@ window.addEventListener('DOMContentLoaded', () => {
         animations = result;
         //When animations are loaded, assets are ready to be used.
         //runAnimation(200, 200);
-        run();
+        st = new St();
+        window.requestAnimationFrame(run);
     });
 });
 
-function run() {
-    st = new St();
-
-    setInterval(() => {
-        ctx.clearRect(0, 0, 400, 400);
-        st.update();
-    }, 16.666);
+function run(frameT) {
+    if(lastfr === null) lastfr = frameT;
+    dt = frameT - lastfr;
+    lastfr = frameT;
+    ctx.clearRect(0, 0, 400, 400);
+    st.update(dt);
+    window.requestAnimationFrame(run);
 }
 
 const KEY_D = 'D'.charCodeAt(0);
@@ -61,26 +64,25 @@ function St() {
 
 }
 
-St.prototype.update = function() {
+St.prototype.update = function(dt) {
     if(keys[KEY_D] && (this.state != "walkr")) {
         this.state = "walkr";
         this.xScale = 1;
         this.animator.playAnimation("walk");
     } else if (keys[KEY_A] && (this.state != "walkl")) {
-        console.log(this.state);
         this.state = "walkl";
         this.xScale = -1;
         this.animator.playAnimation("walk");
     } else if (keys[KEY_F]) {
         this.state = "idle";
-        this.animator.playAnimationOnce("push", "idle");
+        this.animator.playAnimationOnce("push", null);
     }
     else if(!keys[KEY_D] && !keys[KEY_A] && (this.state != "idle")) {
         this.state = "idle";
         this.animator.playAnimation("idle");
     }
     
-    this.animator.update(this.cx, this.cy, this.angle, this.xScale, this.yScale);
+    this.animator.update(dt, this.cx, this.cy, this.angle, this.xScale, this.yScale);
 }
 
 document.addEventListener("keydown", (e) => {

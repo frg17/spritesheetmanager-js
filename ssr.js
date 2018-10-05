@@ -39,10 +39,10 @@ const SpriteSheetRenderer = (function() {
      * @param {int} frameWidth width each animation frame
      * @param {int} frameHeight height of each animation frame
      * @param {int} frameCount number of frames in animation.
-     * @param {int} frameInterval animation should update every n frames
+     * @param {int} animationLength length of animation (ms)
      */
     function addSpriteSheetAnimation(
-        animationName, imgSrc, frameWidth, frameHeight, frameCount, frameInterval
+        animationName, imgSrc, frameWidth, frameHeight, frameCount, animationLength
     ) 
     {                                                                 ///<---------------------PUBLIC-------------------------------------->
         //Check if animations are already processed
@@ -54,7 +54,7 @@ const SpriteSheetRenderer = (function() {
         
         //Create job
         jobs[animationName] = { animationName, imgSrc, frameWidth, 
-                                frameHeight, frameCount, frameInterval };
+                                frameHeight, frameCount, animationLength };
         //Push job to queue
         jobQueue.push(animationName);
     }
@@ -79,8 +79,7 @@ const SpriteSheetRenderer = (function() {
                 job.frameHeight,
                 job.frameCount,
                 (result) => {
-                    result.frameInterval = job.frameInterval;
-                    result.frameIntervalStep = job.frameInterval;
+                    result.frameInterval = job.animationLength / job.frameCount; //nr. of ms each frame.
                     animations[animationName] = result;
 
                     animations._loadCount--;

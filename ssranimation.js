@@ -30,7 +30,7 @@
  * @param {list} frames List of frames belonging to animation
  */
 function Animation(frames) {
-    this.frameInterval = 1;     //frame should update every x frames
+    this.frameInterval = 0;     //frame should update every x frames
     this.length = frames.length;
     this.frames = frames;
 }
@@ -76,13 +76,13 @@ function Animation(frames) {
  */
 function Animator(ctx) {
     this.ctx = ctx;             //Context to draw upon
-    this.frameIntervalStep = 1; //Updates until next frame
+    this.frameIntervalStep = 0; //Time spent on this animation frame
     this.nextFrame = 0;     //next frame to render for animation
     this.animations = {};   //Animations available to animator
     this.currentAnimation = null; //Current animation playing
 
     this.playOnce = false; //Play current animation once
-    this.playOnceNextAnimation = null;
+    this.playOnceNextAnimation = null;  //Next animation to play after one shot animation
 }
 
 
@@ -102,11 +102,10 @@ Animator.prototype.addAnimation = function(animationName, animation) {
 Animator.prototype.playAnimation = function(animationName) {
     this.currentAnimation = this.animations[animationName];
     this.nextFrame = 0;
-    this.frameIntervalStep = this.currentAnimation.frameInterval;
+    this.frameIntervalStep = 0;
 }
 
 
-/*********************************UNDOCUMENTED ****************/
 /**
  * Plays animation once and then immediately changes to the next one.
  * @param {str} animationName Animation to play once
@@ -115,23 +114,26 @@ Animator.prototype.playAnimation = function(animationName) {
  */
 Animator.prototype.playAnimationOnce = function(animationName, nextAnimationName) {
     this.playOnce = true;
-    this.playOnceNextAnimation = nextAnimationName;
+    this.playOnceNextAnimation = nextAnimationName ? nextAnimationName : null;
     this.currentAnimation = this.animations[animationName];
     this.nextFrame = 0;
-    this.frameIntervalStep = this.currentAnimation.frameInterval;
+    this.frameIntervalStep = 0;
 }
 
 
 /**
  * Updates the current animation.
+ * @param {float} dt time since last frame update
  * @param {int} cx 
  * @param {int} cy 
  * @param {float} angle
  * @param {float} scaleX
  * @param {float} scaleY
  */
-Animator.prototype.update = function(cx, cy, angle, scaleX, scaleY) {
-    if (this.currentAnimation === null) return; //Don't update if there's no animation playing
+Animator.prototype.update = function(dt, cx, cy, angle, scaleX, scaleY) {
+    if (!this.currentAnimation) {
+        return; //Don't update if there's no animation playing
+    }
 
     if (angle == undefined) angle = 0;
     if (scaleX == undefined) scaleX = 1;
@@ -139,20 +141,31 @@ Animator.prototype.update = function(cx, cy, angle, scaleX, scaleY) {
 
     //Get frame to draw
     const frameToDraw = this.currentAnimation.frames[this.nextFrame];
+    //Draw
+    this._render(frameToDraw, cx, cy, angle, scaleX, scaleY);
 
+    this._animationUpdate(dt);
+}
+
+/**
+ * Updates the current state of the animation
+ * @param {float} dt time since last frame update 
+ */
+Animator.prototype._animationUpdate = function(dt) {
     //Update animator status
-    this.frameIntervalStep--;
+    this.frameIntervalStep += dt;
     //Check if animation frame should update on next update call.
-    if(this.frameIntervalStep == 0) {           // TRY AND PULL THIS IF INTO ANOTHER FUNCTION
-        this.frameIntervalStep = this.currentAnimation.frameInterval;
+    if(this.frameIntervalStep >= this.currentAnimation.frameInterval) {
+        this.frameIntervalStep -= this.currentAnimation.frameInterval;
         this.nextFrame++;
         if(this.nextFrame >= this.currentAnimation.length) {
             this.nextFrame = 0;
 
+            //This statement only runs if current animation should only be played once.
             if (this.playOnce) {    //Check if this is a one shot animation
                 this.playOnce = false;  //Next animation should play continuously.
-                if(!this.playOnceNextAnimation == null) {
-                    this.currentAnimation = null;   //Play no animation after
+                if(!this.playOnceNextAnimation === null) {
+                    this.currentAnimation = null;   //Play no animation
                 } else {
                     this.playAnimation(this.playOnceNextAnimation)  //Play next animation after
                 }
@@ -160,9 +173,6 @@ Animator.prototype.update = function(cx, cy, angle, scaleX, scaleY) {
             }
         }
     }
-    
-    //draw frame
-    this._render(frameToDraw, cx, cy, angle, scaleX, scaleY);
 }
 
 /**

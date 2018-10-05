@@ -9,7 +9,7 @@ animations in an easy way.
 
 ### Documentation
 
-__SpriteSheetRenderer.addSpriteSheetAnimation(animationName, imgSrc, frameWidth, frameHeight, frameCount, frameInterval)__
+__SpriteSheetRenderer.addSpriteSheetAnimation(animationName, imgSrc, frameWidth, frameHeight, frameCount, animationLength)__
 
     Adds a spritesheet to the animation work queue. Animations get processed
     when loadAnimations() is called. Function can not be called after loadAnimations()
@@ -25,7 +25,7 @@ __SpriteSheetRenderer.addSpriteSheetAnimation(animationName, imgSrc, frameWidth,
     
     @param {int} _frameCount_ number of frames in animation.
     
-    @param {int} _frameInterval_ animation should update every n frames
+    @param {int} _animationLength_ length (ms) of animation
 
 __SpriteSheetRenderer.loadAnimations(callback)__
 
@@ -64,9 +64,11 @@ __Animator.prototype.playAnimationOnce(animationName, nextAnimationName)__
     
     @param {str} nextAnimationName Next animation to transition to. If null plays no animation after one shot has finished.
 
-__Animator.prototype.update(cx, cy, angle, scaleX, scaleY)__
+__Animator.prototype.update(dt, cx, cy, angle, scaleX, scaleY)__
 
     Renders the Animators current animation at the specified coordinates.
+
+    @param {int} _dt_ Time elapsed since last render
 
     @param {int} _cx_ center x
 
