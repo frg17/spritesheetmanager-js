@@ -57,7 +57,7 @@ __Animator.prototype.playAnimation(animationName)__
     @param {str} _animationName_ name (key) of animation that should be played
 
 
-__Animator.prototype.update(cx, cy, angle, scale)__
+__Animator.prototype.update(cx, cy, angle, scaleX, scaleY)__
 
     Renders the Animators current animation at the specified coordinates.
 
@@ -67,7 +67,9 @@ __Animator.prototype.update(cx, cy, angle, scale)__
 
     @param {float} _angle_ radian angle
 
-    @param {float} _scale_ scale for the animation
+    @param {float} _scaleX_ scale for the x axis of animation
+
+    @param {float} _scaleY_ scale for the y axis of animation
 
 ### Example usage
 ```

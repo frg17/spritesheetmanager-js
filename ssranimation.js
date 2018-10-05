@@ -102,16 +102,20 @@ Animator.prototype.playAnimation = function(animationName) {
     this.frameIntervalStep = this.currentAnimation.frameInterval;
 }
 
+
+/**********************************************UPDATED FUNCTION */
 /**
  * Updates the current animation.
  * @param {int} cx 
  * @param {int} cy 
  * @param {float} angle
- * @param {float} scale
+ * @param {float} scaleX
+ * @param {float} scaleY
  */
-Animator.prototype.update = function(cx, cy, angle, scale) {
+Animator.prototype.update = function(cx, cy, angle, scaleX, scaleY) {
     if (angle == undefined) angle = 0;
-    if (scale == undefined) scale = 1;
+    if (scaleX == undefined) scaleX = 1;
+    if (scaleY == undefined) scaleY = 1;
     //Frame image
     const frameToDraw = this.currentAnimation.frames[this.nextFrame];
 
@@ -125,7 +129,7 @@ Animator.prototype.update = function(cx, cy, angle, scale) {
     }
     
     //draw frame
-    this._render(frameToDraw, cx, cy, angle, scale);
+    this._render(frameToDraw, cx, cy, angle, scaleX, scaleY);
 }
 
 /**
@@ -134,16 +138,17 @@ Animator.prototype.update = function(cx, cy, angle, scale) {
  * @param {int} cx 
  * @param {int} cy 
  * @param {float} angle
- * @param {float} scale
+ * @param {float} scaleX
+ * @param {float} scaleY
  */
-Animator.prototype._render = function(frameToDraw, cx, cy, angle, scale) {
+Animator.prototype._render = function(frameToDraw, cx, cy, angle, scaleX, scaleY) {
     var hw = frameToDraw.width / 2;
     var hh = frameToDraw.height / 2;
 
     this.ctx.save();
     this.ctx.translate(cx, cy);
     this.ctx.rotate(angle);
-    this.ctx.scale(scale, scale);
+    this.ctx.scale(scaleX, scaleY);
     this.ctx.translate(-cx, -cy);
     this.ctx.drawImage(frameToDraw, cx - hw, cy - hh);
     this.ctx.restore();
