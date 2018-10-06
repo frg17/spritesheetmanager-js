@@ -21,7 +21,7 @@ __SpriteSheetRenderer.addSpriteSheetAnimation(animationName, imgSrc, frameWidth,
     
     @param {int} _frameWidth_ width each animation frame
     
-    @param {int} _frameHeight_ height of each animation frame
+    @param {int} _frameHeight_ height of each animation frame 
     
     @param {int} _frameCount_ number of frames in animation.
     
@@ -74,85 +74,15 @@ __Animator.prototype.update(dt, cx, cy, angle, scaleX, scaleY)__
 
     @param {int} _cy_ center y
 
-    @param {float} _angle_ radian angle
+    @param {float} _angle_ radian angle DEFAULT 0
 
-    @param {float} _scaleX_ scale for the x axis of animation
+    @param {float} _scaleX_ scale for the x axis of animation DEFAULT 1
 
-    @param {float} _scaleY_ scale for the y axis of animation
+    @param {float} _scaleY_ scale for the y axis of animation DEFAULT 1
 
 ### Example usage
-```
-<!DOCTYPE html>
-<head>
-    <script src="ssranimation.js"></script>
-    <script src="ssr.js"></script>
-</head>
 
-<body> 
-    <canvas height=400 width=400 id="canvas"></canvas>
-
-
-    <script>
-        let animations;
-        let ctx;
-        let an;
-        let x = 200;
-        let y = 200;
-        let angle = 0;
-        let scale = 1;
-
-
-        window.addEventListener('DOMContentLoaded', () => {
-            ctx = document.getElementById('canvas').getContext('2d');
-            
-            //Add resources for renderer to create animations from
-            SpriteSheetRenderer.addSpriteSheetAnimation(
-                "heroidle", 
-                "https://res.cloudinary.com/frozenscloud/image/upload/v1538648226/heroidle.png", 
-                64, 64, 8, 6
-            );
-            SpriteSheetRenderer.addSpriteSheetAnimation(
-                "pirateidle", 
-                "https://res.cloudinary.com/frozenscloud/image/upload/v1538648226/pirate1idle.png", 
-                32, 32, 6, 6
-            );
-
-            //Create Animation objects.
-            SpriteSheetRenderer.loadAnimations((result) => { 
-                animations = result 
-                //When animations are loaded, assets are ready to be used.
-                runAnimation();
-            });
-        });
-
-
-        function runAnimation() {
-            //Create animator
-            an = new Animator(ctx);
-
-            //Add playable animations to animator
-                //Not centred in frame (change angle to see problem)
-            an.addAnimation("heroidle", animations["heroidle"]); 
-                //Centred in frame
-            an.addAnimation("pirateidle", animations["pirateidle"]);
-
-            //Set animation that should be played (default null)
-            an.playAnimation("pirateidle");
-            
-            //Call render animator on update.
-            iid = setInterval(() => {
-                ctx.clearRect(0, 0, 400, 400);
-                ctx.save();
-                an.update(x, y, angle, scale);
-                ctx.restore();
-            }, 16.666);
-        }
-    </script>
-</body>
-```
-Letting this code run, should allow you to call `an.play("pirateidle")`
-to change the animation the animator is currently animating (and vice versa).
-Also you should be able to modify x, y, angle and scale and see immediate results.
+Coming soon.
 
 ### Known errors
 
