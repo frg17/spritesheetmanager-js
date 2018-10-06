@@ -156,7 +156,7 @@ Animator.prototype._animationUpdate = function(dt) {
     this.frameIntervalStep += dt;
     //Check if animation frame should update on next update call.
     if(this.frameIntervalStep >= this.currentAnimation.frameInterval) {
-        this.frameIntervalStep -= this.currentAnimation.frameInterval;
+        this.frameIntervalStep = 0;
         this.nextFrame++;
         if(this.nextFrame >= this.currentAnimation.length) {
             this.nextFrame = 0;
