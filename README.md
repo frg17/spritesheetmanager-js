@@ -21,7 +21,7 @@ __SpriteSheetRenderer.addSpriteSheetAnimation(animationName, imgSrc, frameWidth,
     
     @param {int} _frameWidth_ width each animation frame
     
-    @param {int} _frameHeight_ height of each animation frame
+    @param {int} _frameHeight_ height of each animation frame 
     
     @param {int} _frameCount_ number of frames in animation.
     
@@ -74,11 +74,11 @@ __Animator.prototype.update(dt, cx, cy, angle, scaleX, scaleY)__
 
     @param {int} _cy_ center y
 
-    @param {float} _angle_ radian angle
+    @param {float} _angle_ radian angle DEFAULT 0
 
-    @param {float} _scaleX_ scale for the x axis of animation
+    @param {float} _scaleX_ scale for the x axis of animation DEFAULT 1
 
-    @param {float} _scaleY_ scale for the y axis of animation
+    @param {float} _scaleY_ scale for the y axis of animation DEFAULT 1
 
 ### Example usage
 
