@@ -82,7 +82,106 @@ __Animator.prototype.update(dt, cx, cy, angle, scaleX, scaleY)__
 
 ### Example usage
 
-Coming soon.
+```
+<!DOCTYPE html>
+<html>
+<head>
+
+    <script src="ssranimation.js"></script>
+    <script src="ssr.js"></script>
+</head>
+
+<body> 
+    <canvas height=400 width=400 id="canvas"></canvas>
+    <script>
+        //Get context
+        var ctx = document.querySelector("canvas").getContext("2d");
+        //Check if animation is walking
+        var walking = false;
+        //Time elapsed between frames
+        var lastFrameTime = 0;
+
+        //Declare animations that should be loaded
+        SpriteSheetRenderer.addSpriteSheetAnimation(
+            "idle", 
+            "https://res.cloudinary.com/frozenscloud/image/upload/v1538747380/idle.png", 
+            32, 64, 1, 0
+        );
+        SpriteSheetRenderer.addSpriteSheetAnimation(
+            "walk", 
+            "https://res.cloudinary.com/frozenscloud/image/upload/v1538747380/walk.png", 
+            32, 64, 6, 600
+        );
+
+
+        //Function that creates an animator and starts
+        //the rendering loop
+        function StartAnimation(animations) {
+            //Create animator
+            var animator = new Animator(ctx);
+            //Add animations available to animator
+            animator.addAnimation("idle", animations["idle"]);
+            animator.addAnimation("walk", animations["walk"]);
+            //Set animation that should be playing.
+            animator.playAnimation("idle");
+
+            //Add key listeners
+            addWalkButton(animator);
+
+            //Start animation loop
+            window.requestAnimationFrame((now) => {
+                lastFrameTime = now;
+                ctx.clearRect(0,0, 400, 400);
+                playAnimation(now, animator);
+            });
+
+        }
+
+        //Allows toggling walking when space is pressed
+        function addWalkButton(animator) {
+             //Make animator play walk when Space key is held down
+             window.addEventListener("keydown", (e) => {
+                if(e.keyCode == 32 && walking === false) { //If space is pressed
+                    animator.playAnimation("walk");
+                    walking = true;
+                }
+            });
+
+            //Make animator play idle when space is released
+            window.addEventListener("keyup", (e) => {
+                if(e.keyCode == 32) {
+                    animator.playAnimation("idle");
+                    walking = false;
+                }
+            });
+        }
+
+        //Main iteration function.
+        function playAnimation(now, animator) {
+            //Calculate time elapsed between frames
+            var dt = now - lastFrameTime;
+            //Update last frame time
+            lastFrameTime = now;
+            //Updates animation
+            animator.update(dt, 200, 200);
+            //Calls playAnimation again next frame
+            window.requestAnimationFrame((now) => {
+                ctx.clearRect(0,0, 400, 400);
+                playAnimation(now, animator);
+            });
+        }
+
+        //Finally start loading spritesheets
+        SpriteSheetRenderer.loadAnimations((animations) => {
+            //Callback functions passed animations as parameter.
+            //Start rendering when images have been loaded
+            StartAnimation(animations);
+        });
+
+    </script>
+</body>
+</html>
+```
 
 ### Known errors
 
