@@ -9,24 +9,24 @@ window.addEventListener('DOMContentLoaded', () => {
     ctx = document.getElementById('canvas').getContext('2d');
     
     //Add resources for renderer to create animations from
-    SpriteSheetRenderer.addSpriteSheetAnimation(
+    SpriteSheetManager.addSpriteSheetAnimation(
         "idle", 
         "https://res.cloudinary.com/frozenscloud/image/upload/v1538747380/idle.png", 
         32, 64, 1, 0
     );
-    SpriteSheetRenderer.addSpriteSheetAnimation(
+    SpriteSheetManager.addSpriteSheetAnimation(
         "walk", 
         "https://res.cloudinary.com/frozenscloud/image/upload/v1538747380/walk.png", 
         32, 64, 6, 600
     );
-    SpriteSheetRenderer.addSpriteSheetAnimation(
+    SpriteSheetManager.addSpriteSheetAnimation(
         "push",
         "https://res.cloudinary.com/frozenscloud/image/upload/v1538751438/push.png",
         32, 64, 6, 600
     );
 
     //Create Animation objects.
-    SpriteSheetRenderer.loadAnimations((result) => { 
+    SpriteSheetManager.loadAnimations((result) => { 
         animations = result;
         //When animations are loaded, assets are ready to be used.
         //runAnimation(200, 200);

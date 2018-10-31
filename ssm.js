@@ -9,20 +9,20 @@
  */
 
 /**
- * Main SpriteSheetRenderer object.
+ * Main SpriteSheetManager object.
  * Contains logic for creating SpriteSheet objects.
  * 
  * -- Usage -- 
  *      Create sprite:  
- *          SpriteSheetRenderer.addSpriteSheetAnimation(animationName, imgSrc, frameWidth, frameHeight, frameCount, frameInterval);
+ *          SpriteSheetManager.addSpriteSheetAnimation(animationName, imgSrc, frameWidth, frameHeight, frameCount, frameInterval);
  *          ... repeat for other animations ...
  * 
- *          SpriteSheetRenderer.loadAnimations((animations) => {
+ *          SpriteSheetManager.loadAnimations((animations) => {
  *              -- do stuff --      
  *          });
  *                                                     
  */
-const SpriteSheetRenderer = (function() {
+const SpriteSheetManager = (function() {
     /* List of jobs, every attribute should be in format:
         { imgSrc, frameWidth, frameHeight, frameCount, onLoad }
     */
@@ -30,6 +30,7 @@ const SpriteSheetRenderer = (function() {
     const jobQueue = [];    //queue for jobs
     let jobsRun = false;    //Check if already called loadAnimations()
 
+    let allAnimations = null;
 
     /**
      * Adds a spritesheet to the animation work queue. Animations get processed
@@ -84,6 +85,7 @@ const SpriteSheetRenderer = (function() {
 
                     animations._loadCount--;
                     if(animations._loadCount == 0) {
+                        allAnimations = animations;
                         callback(animations);
                     }
                 }
@@ -170,6 +172,18 @@ const SpriteSheetRenderer = (function() {
         }
     }
 
+    /**
+     * Function returns an animation with given name OR if frame
+     * is included, returns that frame (as an image) of the animation
+     * with the given name.
+     * @param {string} animationName
+     * @param {int} frame get Image for specific frame of animation if included
+     */
+    function get(animationName, frame = -1) {
+        if(frame !== -1) return allAnimations[animationName].frames[frame];
+        return allAnimations[animationName];
+    }
+
 
 
     /**
@@ -184,7 +198,7 @@ const SpriteSheetRenderer = (function() {
     return {
         addSpriteSheetAnimation,
         loadAnimations,
-        _debug,
+        get,
     }
 
  })();

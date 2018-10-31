@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <head>
 
-    <script src="ssranimation.js"></script>
-    <script src="ssr.js"></script>
-    <!-- <script src="ssrdev.js"></script> -->
+    <script src="SpriteSheetManager.js"></script>
+    <!-- <script src="ssmdev.js"></script> -->
 </head>
 
 <body> 
     <canvas height=400 width=400 id="canvas"></canvas>
+    <p>Space to walk</p>
     <script>
         //Get context
         var ctx = document.querySelector("canvas").getContext("2d");
@@ -17,12 +17,12 @@
         var lastFrameTime = 0;
 
         //Declare animations that should be loaded
-        SpriteSheetRenderer.addSpriteSheetAnimation(
+        SpriteSheetManager.addSpriteSheetAnimation(
             "idle", 
             "https://res.cloudinary.com/frozenscloud/image/upload/v1538747380/idle.png", 
             32, 64, 1, 0
         );
-        SpriteSheetRenderer.addSpriteSheetAnimation(
+        SpriteSheetManager.addSpriteSheetAnimation(
             "walk", 
             "https://res.cloudinary.com/frozenscloud/image/upload/v1538747380/walk.png", 
             32, 64, 6, 600
@@ -31,12 +31,12 @@
 
         //Function that creates an animator and starts
         //the rendering loop
-        function StartAnimation(animations) {
+        function StartAnimation() {
             //Create animator
             var animator = new Animator(ctx);
             //Add animations available to animator
-            animator.addAnimation("idle", animations["idle"]);
-            animator.addAnimation("walk", animations["walk"]);
+            animator.addAnimation("idle", SpriteSheetManager.get("idle"));
+            animator.addAnimation("walk", SpriteSheetManager.get(["walk"]));
             //Set animation that should be playing.
             animator.playAnimation("idle");
 
@@ -87,10 +87,10 @@
         }
 
         //Finally start loading spritesheets
-        SpriteSheetRenderer.loadAnimations((animations) => {
+        SpriteSheetManager.loadAnimations(() => {
             //Callback functions passed animations as parameter.
             //Start rendering when images have been loaded
-            StartAnimation(animations);
+            StartAnimation();
         });
 
     </script>

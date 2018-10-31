@@ -9,7 +9,7 @@ animations in an easy way.
 
 ### Documentation
 
-__SpriteSheetRenderer.addSpriteSheetAnimation(animationName, imgSrc, frameWidth, frameHeight, frameCount, animationLength)__
+__SpriteSheetManager.addSpriteSheetAnimation(animationName, imgSrc, frameWidth, frameHeight, frameCount, animationLength)__
 
     Adds a spritesheet to the animation work queue. Animations get processed
     when loadAnimations() is called. Function can not be called after loadAnimations()
@@ -27,7 +27,7 @@ __SpriteSheetRenderer.addSpriteSheetAnimation(animationName, imgSrc, frameWidth,
     
     @param {int} _animationLength_ length (ms) of animation
 
-__SpriteSheetRenderer.loadAnimations(callback)__
+__SpriteSheetManager.loadAnimations(callback)__
 
     Functions starts loading and creating all animations added to job queue.
     When all animations have been created, callback function is called that
@@ -35,6 +35,16 @@ __SpriteSheetRenderer.loadAnimations(callback)__
     Can not be called more than once.
     
     @param {func} _callback_ callback function returning object.
+
+__SpriteSheetManager.get(animationName, frame)__
+
+    Function returns an animation with given name OR if frame
+    is included, returns that frame (as an image) of the animation
+    with the given name.
+
+    @param {string} animationName
+    
+    @param {int} frame get Image for specific frame of animation if included
 
 __Animator(ctx)__
 
@@ -81,107 +91,7 @@ __Animator.prototype.update(dt, cx, cy, angle, scaleX, scaleY)__
     @param {float} _scaleY_ scale for the y axis of animation DEFAULT 1
 
 ### Example usage
-
-```
-<!DOCTYPE html>
-<html>
-<head>
-
-    <script src="ssranimation.js"></script>
-    <script src="ssr.js"></script>
-</head>
-
-<body> 
-    <canvas height=400 width=400 id="canvas"></canvas>
-    <script>
-        //Get context
-        var ctx = document.querySelector("canvas").getContext("2d");
-        //Check if animation is walking
-        var walking = false;
-        //Time elapsed between frames
-        var lastFrameTime = 0;
-
-        //Declare animations that should be loaded
-        SpriteSheetRenderer.addSpriteSheetAnimation(
-            "idle", 
-            "https://res.cloudinary.com/frozenscloud/image/upload/v1538747380/idle.png", 
-            32, 64, 1, 0
-        );
-        SpriteSheetRenderer.addSpriteSheetAnimation(
-            "walk", 
-            "https://res.cloudinary.com/frozenscloud/image/upload/v1538747380/walk.png", 
-            32, 64, 6, 600
-        );
-
-
-        //Function that creates an animator and starts
-        //the rendering loop
-        function StartAnimation(animations) {
-            //Create animator
-            var animator = new Animator(ctx);
-            //Add animations available to animator
-            animator.addAnimation("idle", animations["idle"]);
-            animator.addAnimation("walk", animations["walk"]);
-            //Set animation that should be playing.
-            animator.playAnimation("idle");
-
-            //Add key listeners
-            addWalkButton(animator);
-
-            //Start animation loop
-            window.requestAnimationFrame((now) => {
-                lastFrameTime = now;
-                ctx.clearRect(0,0, 400, 400);
-                playAnimation(now, animator);
-            });
-
-        }
-
-        //Allows toggling walking when space is pressed
-        function addWalkButton(animator) {
-             //Make animator play walk when Space key is held down
-             window.addEventListener("keydown", (e) => {
-                if(e.keyCode == 32 && walking === false) { //If space is pressed
-                    animator.playAnimation("walk");
-                    walking = true;
-                }
-            });
-
-            //Make animator play idle when space is released
-            window.addEventListener("keyup", (e) => {
-                if(e.keyCode == 32) {
-                    animator.playAnimation("idle");
-                    walking = false;
-                }
-            });
-        }
-
-        //Main iteration function.
-        function playAnimation(now, animator) {
-            //Calculate time elapsed between frames
-            var dt = now - lastFrameTime;
-            //Update last frame time
-            lastFrameTime = now;
-            //Updates animation
-            animator.update(dt, 200, 200);
-            //Calls playAnimation again next frame
-            window.requestAnimationFrame((now) => {
-                ctx.clearRect(0,0, 400, 400);
-                playAnimation(now, animator);
-            });
-        }
-
-        //Finally start loading spritesheets
-        SpriteSheetRenderer.loadAnimations((animations) => {
-            //Callback functions passed animations as parameter.
-            //Start rendering when images have been loaded
-            StartAnimation(animations);
-        });
-
-    </script>
-</body>
-</html>
-```
+See canv.html
 
 ### Known errors
 
